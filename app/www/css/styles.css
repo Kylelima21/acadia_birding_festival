@@ -1,0 +1,112 @@
+*{
+  font-family: 'Playfair Display', Sans-Serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+.header{
+  position: fixed;
+  font-size: 60px;
+  top: 80px;
+  width: 100%;
+}
+
+.headerl{
+  position: fixed;
+  font-size: 50px;
+  top: 50px;
+  left: 10px;
+}
+
+.subheader{
+  position: fixed;
+  font-size: 30px;
+  top: 165px;
+  width: 100%;
+}
+
+.body{
+  position: fixed;
+  font-size: 25px;
+  top: 100px;
+  left: 10px;
+}
+
+.textl{
+  position: absolute;
+  left: 30px;
+}
+
+.link{
+  color: #F7F7F7 !important;
+}
+
+.footer{
+  position: fixed;
+  bottom: 5px;
+  width: 100%;
+}
+
+.footerl{
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+}
+
+.footerr{
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+}
+
+.shadow-dark{
+  text-shadow: 0px 1px 1px rgba(47, 47, 47, 1);
+}
+
+.shadow-light{
+  text-shadow: 0px 1px 1px rgba(249, 247, 241, 1);
+}
+
+.light{
+  color: #f9f7f1;
+}
+
+.dark{
+  color: #2f2f2f;
+}
+
+.white{
+  color: #F7F7F7;
+}
+
+.black{
+  color: #000000;
+}
+
+#logo {
+  background-color: transparent;
+}
+
+#titleback {
+  background-color: #B3E0E9;
+}
+
+#controls {
+  /* Appearance */
+  background-color: white;
+  padding: 0 10px 10px 10px;
+  cursor: move;
+  /* Fade out while not hovering */
+  opacity: 0.7;
+  zoom: 0.9;
+  transition: opacity 500ms 0.1s;
+}
+
+#controls:hover {
+  /* Fade in while hovering */
+  opacity: 0.99;
+  transition-delay: 0;
+}
+

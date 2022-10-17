@@ -1,9 +1,10 @@
 require(tidyverse)
 require(leaflet)
 require(lubridate)
-# require(shiny)
-# require(shinythemes)
-# require(shinyWidgets)
+require(shiny)
+require(shinythemes)
+require(shinyWidgets)
+library(echarts4r)
 # require(bslib)
 # require(fresh)
 # require(png)
@@ -88,6 +89,9 @@ get_summaries <- function(x) {
   write.csv(summary_one, "outputs/number_summary.csv", row.names = F)
   write.csv(total_species_year, "outputs/species_per_year.csv", row.names = F)
   write.csv(all_taxa_totals_yearly, "outputs/all_taxa_summary.csv", row.names = F)
+  write.csv(summary_one, "app/www/datasets/number_summary.csv", row.names = F)
+  write.csv(total_species_year, "app/www/datasets/species_per_year.csv", row.names = F)
+  write.csv(all_taxa_totals_yearly, "app/www/datasets/all_taxa_summary.csv", row.names = F)
   
 }
 
@@ -140,6 +144,7 @@ leaflet_summary <- function (x) {
   
   map <- leaflet() %>% 
     addProviderTiles(providers$Esri.WorldImagery) %>% 
+    addProviderTiles(providers$Stamen.TonerLines) %>% 
     addProviderTiles(providers$Stamen.TerrainLabels) %>% 
     addMarkers(formap$longitude, formap$latitude, clusterOptions = markerClusterOptions())
   

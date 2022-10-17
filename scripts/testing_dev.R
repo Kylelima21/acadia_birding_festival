@@ -6,8 +6,7 @@ get_summaries(data)
 leaflet_summary(data)
 
 
-  
-  
+
   
   
 

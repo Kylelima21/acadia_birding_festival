@@ -57,7 +57,7 @@ clean <- tibble(read.csv("data/abf_raw_data.csv")) %>%
 
 # Write out the cleaned data!
 write.csv(clean, "outputs/abf_clean_data.csv")
-
+write.csv(clean, "app/www/datasets/abf_clean_data.csv")
 
 
 
