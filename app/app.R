@@ -17,16 +17,15 @@ summaryst <- read.csv("www/datasets/number_summary.csv")
 ui <- function() {
   
   ## Set up and menu creation
-  #pagePiling(
-  fullPage(
-    #sections.color = c('white', 'white', 'white', '#607B8B', '#607B8B', '#3E4A57'),
-    opts = list(sections.color = c('white', 'white', 'white', '#607B8B', '#607B8B', '#3E4A57')),
+  pagePiling(
+    sections.color = c('white', 'white', 'white', '#607B8B', '#607B8B', '#4A708B'),
+    opts = list(easing = "swing"),
     menu = c(
       "Home" = "home",
       "Summary Map" = "map",
       "Species Explorer" = "species",
-      "Changes" = "changes",
-      "Photo Gallery" = "photos",
+      "Trip Explorer" = "locs",
+      "Trends" = "trends",
       "About" = "about"
     ),
       
@@ -34,15 +33,51 @@ ui <- function() {
       ## Home Page
       pageSectionImage(
         center = TRUE,
-        img = "img/background.jpg",
+        img = "img/atpu.jpg",
         menu = "home",
-        h1(textOutput("title"), class = "header shadow-dark", 
+        
+        h1(textOutput("title"), class = "headerw shadow-dark", 
            tags$head(includeCSS("www/css/styles.css"))),
+        
         h3("Observations Explorer", class = "subheader shadow-dark"),
-        absolutePanel(id = "logo", class = "card", bottom = 20, right = 80, width = 40, fixed = TRUE, draggable = FALSE, height = "12%",
+        
+        absolutePanel(id = "logo", class = "card", bottom = 55, right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
                       tags$a(href = 'https://schoodicinstitute.org/', tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'))),
-        absolutePanel(id = "logo", class = "card", bottom = 20, left = 20, width = 40, fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto')))
+        
+        absolutePanel(id = "logo", class = "card", bottom = 55, left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
+                      tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto'))),
+        
+        absolutePanel(id = "logo", class = "card", bottom = 0, left = 0, width = "100%",  height = "6%", fixed = TRUE, draggable = FALSE),
+        
+        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 180, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+                      actionButton("twitter_share", label = "", icon = icon("twitter"), style = 'padding:6px',
+                                   onclick = sprintf("window.open('%s')", 
+                                                     "https://twitter.com/SchoodicInst"))),
+        
+        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 140, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+                      actionButton("facebook_share", label = "", icon = icon("facebook"), style = 'padding:6px',
+                                   onclick = sprintf("window.open('%s')", 
+                                                     "https://www.facebook.com/SchoodicInstitute"))),
+        
+        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 100, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+                      actionButton("instagram_share", label = "", icon = icon("instagram"), style = 'padding:6px',
+                                   onclick = sprintf("window.open('%s')", 
+                                                     "https://www.instagram.com/schoodicinst/"))),
+        
+        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 60, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+                      actionButton("youtube_share", label = "", icon = icon("youtube"), style = 'padding:6px',
+                                   onclick = sprintf("window.open('%s')", 
+                                                     "https://www.youtube.com/user/SchoodicInstitute"))),
+        
+        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 20, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+                      actionButton("linkedin_share", label = "", icon = icon("linkedin"), style = 'padding:6px',
+                                   onclick = sprintf("window.open('%s')", 
+                                                     "https://www.linkedin.com/company/schoodicinstitute/"))),
+        
+        absolutePanel(id = "loglink", class = "card", bottom = 9, left = 20, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+                      actionButton("facebook_share", label = "", icon = icon("facebook"), style = 'padding:6px',
+                                   onclick = sprintf("window.open('%s')", 
+                                                     "https://www.facebook.com/AcadiaBirdingFestival/")))
       ),
       
       
@@ -51,18 +86,31 @@ ui <- function() {
         center = TRUE,
         menu = "map",
         leafletOutput("mapsum", height = "100%"),
-        absolutePanel(id = "controls", class = "panel",
-                      top = 15, right = 20, width = 400, fixed = TRUE,
+        
+        absolutePanel(id = "instruct", class = "panel",
+                      top = 15, right = 40, width = 360, fixed = TRUE,
                       draggable = FALSE, height = "auto",
   
-                      h2("Acadia Birding Festival Observations"),
-                      h4("(2010 to present)"),
+                      h2("Acadia Birding Festival Observations", class = "black"),
+                      h4("(2010 to present)", class = "black"),
                       tags$br(),
-                      h3("The festival has contributed a lot of eBird data:", align = "left"),
-                      h4(textOutput("num_sp"), align = "left"),
-                      h4(textOutput("num_loc"), align = "left"),
-                      h4(textOutput("num_check"), align = "left"),
-                      h4(textOutput("num_birds"), align = "left")
+                      h3("Festival participants have been busy!", align = "left", class = "black"),
+                      h4(textOutput("num_sp"), align = "left", class = "black"),
+                      h4(textOutput("num_loc"), align = "left", class = "black"),
+                      h4(textOutput("num_check"), align = "left", class = "black"),
+                      h4(textOutput("num_birds"), align = "left", class = "black")
+                      ),
+        
+        absolutePanel(id = "controls", class = "panel",
+                      bottom = 20, left = 10, width = 360, fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+                      
+                      h4("How to use this page:"),
+                      h5("Click on a circle marker to expand the sightings.", align = "left"),
+                      h5("Hover your cursor over any blue point to see the species.",
+                         align = "left"),
+                      h5("Click on any blue point to open a window with a link to the eBird checklist.",
+                         align = "left")
                       )
       ),
     
@@ -72,74 +120,135 @@ ui <- function() {
         center = TRUE,
         menu = "species",
         leafletOutput("reactspmap", height = "100%"),
-        absolutePanel(class = "panel panel-default",
-                      top = 10, right = 40, width = 300, fixed = TRUE,
+        
+        absolutePanel(id = "instruct", class = "panel panel-default",
+                      top = 15, right = 40, width = 325, fixed = TRUE,
                       draggable = FALSE, height = "auto",
+                      
+                      h1("Species Explorer"),
+                      tags$br(),
 
                       pickerInput("species_select",
-                                  label = h3("Select a species to explore:"),
+                                  label = "Select a species:",
                                   choices = as.character(unique(fullnosp$common.name)),
                                   choicesOpt = list(noneSelectedText = "Search for a species"),
                                   options = list(`none-selected-text` = "Select a species...",
                                                  `live-search` = TRUE,
-                                                 size = 16),
+                                                 size = 14),
                                   selected = as.character(unique(fullnosp$common.name)[1]),
                                   multiple = FALSE)),
       
-        absolutePanel(class = "panel panel-default",
-                      bottom = 15, right = 4, width = 677, fixed = TRUE,
-                      draggable = FALSE, height = 167,
+        absolutePanel(id = "darkplots", class = "panel",
+                      bottom = 5, right = 0, width = 587, fixed = TRUE,
+                      draggable = FALSE, height = 177,
 
-                      plotOutput("spplot", width = 675, height = 165))
+                      plotOutput("spplot", width = 585, height = 175))
         
       ),
       
      
-      ## Changes
-      pageSection(
+      ## Trip Explorer
+      pageSectionImage(
         center = TRUE,
-        menu = "changes",
-        absolutePanel(id = "controls", class = "panel panel-default",
-                      top = 75, left = 20, width = 700, fixed = TRUE,
+        menu = "locs",
+        img = "img/yewa.jpg",
+        
+        absolutePanel(id = "plots", class = "panel panel-default",
+                      top = "18%", left = "5%", width = "35%", fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+                      
+                      h2("Trip Explorer"),
+                      tags$br(),
+                      
+                      pickerInput("trip_select",
+                                  label = "Select a trip:",
+                                  choices = as.character(unique(fullnosp %>% drop_na() %>% pull(trip))),
+                                  choicesOpt = list(noneSelectedText = "Select a trip..."),
+                                  options = list(`none-selected-text` = "Select a trip...",
+                                                 `live-search` = TRUE,
+                                                 size = 14),
+                                  selected = as.character(unique(fullnosp %>% drop_na() %>% pull(trip))[1]),
+                                  multiple = FALSE),
+                      tags$br(),
+                      
+                      tableOutput("trip_table")
+                      )
+      ),
+    
+    
+      ## Trends
+      pageSectionImage(
+        center = TRUE,
+        menu = "trends",
+        img = "img/btnw.jpeg",
+        
+        h1("Festival Trends Through Time", class = "headerl black shadow-dm"),
+        
+        absolutePanel(class = "panel panel-default",
+                      top = "18%", left = "5%", width = "35%", fixed = TRUE,
                       draggable = FALSE, height = "auto",
 
-                      plotOutput("spy_plot"))
-      ),
-      
-      
-      ## Photo Gallery
-      pageSection(
-        center = TRUE,
-        menu = "photos",
+                      h4("Some text descibing plots")),
         
-        fullSlide(
-          img = "img/schoodic_stacked.jpeg"),
+        absolutePanel(class = "panel panel-default",
+                      bottom = "5%", left = "1%", width = "43%", fixed = TRUE,
+                      draggable = FALSE, height = "auto",
 
-        fullSlideImage(
-          img = paste0(
-            "https://raw.githubusercontent.com/alvarotrigo/",
-            "fullPage.js/master/examples/imgs/bg5.jpg"),
-          h2("Image background"))
+                      plotOutput("spy_plot")),
+        
+        absolutePanel(class = "panel panel-default",
+                      bottom = "0%", left = "45%", width = "51%", fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+
+                      plotOutput("tpy_plot"))
       ),
 
       
       ## About
-      pageSection(
+      pageSectionImage(
         menu = "about",
         center = TRUE,
-        h1("About this site:", class = "headerl white"),
-        h3(HTML("• This Shiny application was created by Schoodic Institute at Acadia National Park<br>with the Acadia Birding Festival"),
-           class = 'white'),
-        tags$br(),
-        h3("• If you have any questions about this website, please contact Kyle Lima at klima@schoodicinstitute.org", class = 'white'),
-        tags$br(),
-        h3("• For questions or information about the Acadia Birding Festival, please contact Becky Marvil at beckym@acadiabirdingfestival.com",
-           class = 'white'),
-        h3(tags$a("Acadia Birding Festival", href = "https://www.acadiabirdingfestival.com/", 
-                  class = "footerl link"),
-           tags$a("Schoodic Institute at Acadia National Park", 
-                  href = "https://schoodicinstitute.org/",
-                  class = "footerr link"))
+        img = "img/spgr.jpg",
+        
+        absolutePanel(id = "about", class = "panel panel-default",
+                      top = 75, right = 150, width = 540, fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+                      
+                      h1("About this site:", class = "white"),
+                      tags$br(),
+                      tags$br(),
+                      h4("• This Shiny application was created by Schoodic Institute at 
+                              Acadia National Park and the Acadia Birding Festival.",
+                         class = 'white', align = "left"),
+                      tags$br(),
+                      h4("• If you have any questions about this website, please contact 
+                         Kyle Lima (klima@schoodicinstitute.org).", class = 'white', align = "left"),
+                      tags$br(),
+                      h4("• For questions or information about the Acadia Birding Festival, 
+                         please contact Becky Marvil (beckym@acadiabirdingfestival.com).",
+                         class = 'white', align = "left"),
+                      tags$br(),
+                      h4("• Please checkout our websites for more information by clicking on the 
+                      logos in the bottom corners of this page.",
+                         class = 'white', align = "left"),
+                      tags$br(),
+                      tags$br(),
+                      tags$br(),
+                      tags$br(),
+                      ),
+        
+                      
+        absolutePanel(id = "logo", class = "card", bottom = 25, right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
+                      tags$a(href = 'https://schoodicinstitute.org/', tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'))),
+        
+        absolutePanel(id = "logo", class = "card", bottom = 25, left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
+                      tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto'))),
+        
+        absolutePanel(class = "panel",
+                      bottom = "27%", right = 325, width = 200, fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+                      
+                      pageButtonTo(h4("Return home", class = "black"), section = 1))
       )
   )
 }
@@ -160,22 +269,22 @@ server <- function(input, output, session) {
   
   ## Number of species recorded
   output$num_sp <- renderText({
-    paste("•", summaryst$total[1], "species recorded", sep = " ")
+    paste("•", comma(summaryst$total[1]), "species recorded", sep = " ")
   })
   
   ## Number of locations birded
   output$num_loc <- renderText({
-    paste("•", summaryst$total[2], "locations birded", sep = " ")
+    paste("•", comma(summaryst$total[2]), "locations birded", sep = " ")
   })
   
   ## Number of checklists sumbitted
   output$num_check <- renderText({
-    paste("•", summaryst$total[3], "checklists submitted", sep = " ")
+    paste("•", comma(summaryst$total[3]), "checklists submitted", sep = " ")
   })
   
   ## Number of individuals seen
   output$num_birds <- renderText({
-    paste("•", summaryst$total[4], "individual birds tallied", sep = " ")
+    paste("•", comma(summaryst$total[4]), "individual birds tallied", sep = " ")
   })
   
   ## Reactive data frame for Species Explorer tab
@@ -194,9 +303,25 @@ server <- function(input, output, session) {
     sp_trends(species_reactive_db())
   })
   
-  ## Species/year ggplot for Changes tab
+  ## Reactive data frame for Trip Explorer tab
+  trip_reactive_db <- reactive({
+    read.csv("www/datasets/abf_clean_data.csv") %>% 
+      filter(trip == paste(input$trip_select))
+  })
+  
+  ## Reactive output to display summary for trips for Trip Explorer tab - uses trip_reactive_db
+  output$trip_table <- renderTable({ 
+    trip_summary(trip_reactive_db())
+  })
+  
+  ## Species/year ggplot for Trends tab
   output$spy_plot <- renderPlot({
     spy_plot(read.csv("www/datasets/species_per_year.csv"))
+  })
+  
+  ## Total birds/year ggplot for Trends tab
+  output$tpy_plot <- renderPlot({
+    tpy_plot(read.csv("www/datasets/abf_clean_data.csv"))
   })
   
 }

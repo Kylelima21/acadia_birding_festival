@@ -4,10 +4,14 @@
 ## Source functions needed
 source("scripts/abf_functions.R")
 
-## Run the data cleaning script
-source("scripts/01_data_manipulation.R")
+
+## Run data cleaning
+rawdata <- read.csv("data/abf_raw_data_2022.csv")
+
+clean_data(rawdata)
+
 
 ## Summarize and write out necessary data
 data <- read.csv("outputs/abf_clean_data.csv")
 
-leaflet_summary(data)
+get_summaries(data)

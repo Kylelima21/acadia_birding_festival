@@ -116,6 +116,11 @@ leaflet_summary <- function (x) {
   formap <- x %>% 
     mutate(url = paste0("<b><a href='", url, "' target='_blank' rel='noopener noreferrer'", ">View observation<br>on eBird </a></b>")) 
   
+  maxLong = max(formap$longitude) + 1
+  maxLat = max(formap$latitude)
+  minLong = min(formap$longitude)
+  minLat = min(formap$latitude)
+  
   map <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>% 
     addProviderTiles(providers$Esri.WorldImagery) %>% 
     addProviderTiles(providers$Stamen.TonerLines, options = providerTileOptions(opacity = 0.35)) %>% 
@@ -124,7 +129,8 @@ leaflet_summary <- function (x) {
     addMarkers(formap$longitude, formap$latitude, label = formap$common.name,
                labelOptions = labelOptions(textsize = "15px"),
                clusterOptions = markerClusterOptions(),
-               popup = formap$url)
+               popup = formap$url) %>%
+    fitBounds(minLong, minLat, maxLong, maxLat)
   
   return(map)
 }
@@ -144,6 +150,11 @@ species_leaflet <- function (x) {
     mutate(url = paste0("<b><a href='", url, "' target='_blank' rel='noopener noreferrer'", ">View checklist<br>on eBird </a></b>")) 
     #mutate(url = paste0("<b><a href='", url, "'>View observation<br>on eBird</a></b>")) 
   
+  maxLong = max(formap$longitude) + 1
+  maxLat = max(formap$latitude)
+  minLong = min(formap$longitude)
+  minLat = min(formap$latitude) + 0.2
+  
   map <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>% 
     addProviderTiles(providers$Esri.WorldImagery) %>% 
     addProviderTiles(providers$Stamen.TonerLines, options = providerTileOptions(opacity = 0.35)) %>% 
@@ -152,9 +163,58 @@ species_leaflet <- function (x) {
     addMarkers(formap$longitude, formap$latitude, label = formap$location,
                labelOptions = labelOptions(textsize = "15px"),
                clusterOptions = markerClusterOptions(),
-               popup = formap$url)
+               popup = formap$url) %>%
+    fitBounds(minLong, minLat, maxLong, maxLat)
   
   return(map)
+}
+
+
+
+
+#' Function to produce a graphic of species trends by year
+#'
+#' @return A graphic displaying species trends by year
+#' @param x: A data frame of observations.
+
+sp_trends <- function(x) {
+  
+  plot <- x %>% 
+    select(common.name, scientific.name, date, count) %>% 
+    group_by(year(date), scientific.name, common.name) %>% 
+    summarise(count = sum(count), .groups = "drop") %>% 
+    rename(year = `year(date)`) %>% 
+    select(common.name, scientific.name, year, count) %>% 
+    filter(year > 2006) %>% 
+    arrange(common.name, year) %>% 
+    ggplot(aes(as.factor(year), common.name, fill = count)) + 
+    geom_tile(color = "gray10", size = 1.5) + 
+    scale_fill_viridis(option = "viridis") +
+    scale_x_discrete(breaks = factor(2010:2022), limits = c("2010", "2011", "2012", "2013", "2014",
+                                                            "2015", "2016", "2017", "2018", "2019",
+                                                            "2020", "2021", "2022")) +
+    xlab("") + 
+    ylab("") +
+    ggtitle("Total Individuals Recorded per Year") +
+    theme(plot.title = element_text(color = "white", hjust = 0.5, vjust = 0.8, size = rel(2)),
+          plot.background = element_rect(fill = "gray10", color = "gray10"),
+          plot.margin = unit(c(14.5, 18.5, 5.5, 5.5), "points"),
+          panel.background = element_rect(fill = "gray10"),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.line = element_blank(),
+          axis.ticks.y = element_blank(), 
+          axis.text = element_text(color = "white", size = rel(1.3)),
+          # axis.text.y  = element_text(hjust = 1),
+          axis.text.y  = element_blank(),
+          legend.text = element_text(color = "white", size = rel(1.3)),
+          legend.background = element_rect(fill = "gray10"),
+          legend.position = "bottom",
+          legend.key.size = unit(.5, "cm"),
+          legend.key.width = unit(2, "cm"),
+          legend.title = element_blank())
+  
+  return(plot)
 }
 
 
@@ -175,17 +235,21 @@ spy_plot <- function(x) {
     geom_bar(stat = "identity", color = "black") +
     geom_text(aes(label = total), vjust = -1, size = 5) +
     scale_y_continuous(expand = c(0,0), limits = c(0,220)) +
+    scale_x_discrete(breaks = x$year[seq(1, length(x$year), by = 2)]) +
     scale_fill_viridis(option = "viridis",
-                       values = rescale(c(0, 140, max(plotdat$total))),
+                       values = rescale(c(0, 140, max(x$total))),
                        n.breaks = 4) +
-    labs(x = "Year", y = "Total species") +
+    labs(x = "Year", y = "Total species", title = "Number of Species Observed Each Year") +
     theme_classic() +
     theme(legend.title = element_blank(),
           legend.key.size = unit(1, "cm"),
           legend.text = element_text(color = "black", size = 14),
           axis.text = element_text(color = "black", size = 14),
           axis.title = element_text(color = "black", size = 16),
-          plot.background = element_blank())
+          plot.title = element_text(size = 24, hjust = 0.5),
+          plot.background = element_rect(fill = "gray97", color = "black", size = 2),
+          panel.background = element_rect(fill = "gray97"),
+          legend.background = element_rect(fill = "gray97"))
   
   return(plot)
   
@@ -194,47 +258,74 @@ spy_plot <- function(x) {
 
 
 
-#' Function to produce a graphic of species trends by year
+#' Function to produce a graph of total birds observed/year
 #'
-#' @return A graphic displaying species trends by year
+#' @return A bar graph of yearly observations
 #' @param x: A data frame of observations.
 #' @export
-sp_trends <- function(x) {
+
+tpy_plot <- function(x) {
   
   plot <- x %>% 
-    select(common.name, scientific.name, date, count) %>% 
-    group_by(year(date), scientific.name, common.name) %>% 
+    mutate(year = year(date)) %>% 
+    group_by(year) %>% 
     summarise(count = sum(count), .groups = "drop") %>% 
-    rename(year = `year(date)`) %>% 
-    select(common.name, scientific.name, year, count) %>% 
-    filter(year > 2006) %>% 
-    arrange(common.name, year) %>% 
-    ggplot(aes(as.factor(year), common.name, fill = count)) + 
-    geom_tile(colour = "gray20", size = 1.5) + 
-    scale_fill_viridis(option = "viridis") +
-    scale_x_discrete(breaks = factor(2010:2022), limits = c("2010", "2011", "2012", "2013", "2014",
-                                                            "2015", "2016", "2017", "2018", "2019",
-                                                            "2020", "2021", "2022")) +
-    xlab("") + 
-    ylab("") +
-    ggtitle("Total individuals per year") +
-    theme(plot.title = element_text(color = "white", hjust = 0, vjust = 1, size = rel(2)),
-          plot.background = element_rect(fill = "gray20", color = "gray20"),
-          panel.background = element_rect(fill = "gray20"),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          axis.line = element_blank(),
-          axis.ticks.y = element_blank(), 
-          axis.text = element_text(color = "white", size = rel(1.3)),
-          axis.text.y  = element_text(hjust = 1),
-          legend.text = element_text(color = "white", size = rel(1.3)),
-          legend.background = element_rect(fill = "gray20"),
-          legend.position = "bottom",
-          legend.key.size = unit(.5, "cm"),
-          legend.key.width = unit(2, "cm"),
-          legend.title = element_blank())
+    filter(year > 2009) %>% 
+    mutate(year = as.character(year)) %>% 
+    ggplot(aes(year, count, fill = count)) +
+    geom_bar(stat = "identity", color = "black") +
+    geom_text(aes(label = comma(count)), vjust = -1, size = 5) +
+    scale_y_continuous(expand = c(0,0), limits = c(0,20100)) +
+    scale_fill_viridis(option = "viridis",
+                       values = rescale(c(0, 140, max(x$count))),
+                       n.breaks = 4) +
+    labs(x = "Year", y = "Total individuals", title = "Total Number of Birds Counted Each Year") +
+    theme_classic() +
+    theme(legend.title = element_blank(),
+          legend.key.size = unit(1, "cm"),
+          legend.text = element_text(color = "black", size = 14),
+          axis.text = element_text(color = "black", size = 14),
+          axis.title = element_text(color = "black", size = 16),
+          plot.title = element_text(size = 24, hjust = 0.5),
+          plot.background = element_rect(fill = "gray97", color = "black", size = 2),
+          panel.background = element_rect(fill = "gray97"),
+          legend.background = element_rect(fill = "gray97"))
   
   return(plot)
 }
 
 
+
+
+#' Function to produce a table to summarize trips offered by ABF
+#'
+#' @return A table summarizing all events from an offered ABF trip
+#' @param x: A data frame of observations.
+#' @export
+
+trip_summary <- function(x) {
+  
+  if(unique(x$trip) == "Schoodic Peninsula") {
+    
+    dat <- x %>% 
+      filter(num.observers < 100) %>% 
+      select(common.name:location.id, date, num.observers)
+    
+  } else {
+    
+    dat <- x %>% 
+      select(common.name:location.id, date, num.observers)
+    
+  }
+  
+  
+  output <- data.frame(`Number_of_species` = length(unique(dat$scientific.name)),
+                       `Number_of_checklists` = length(unique(dat$submission.id)),
+                       `Number_of_years_run` = length(unique(year(dat$date))),
+                       `Average_number_of_participants` = round(mean(dat$num.observers), 0)) %>% 
+    pivot_longer(`Number_of_species`:`Average_number_of_participants`) %>% 
+    rename(Category = name, Value = value)
+  
+  
+  return(output)
+}

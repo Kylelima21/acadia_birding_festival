@@ -1,22 +1,97 @@
 require(tidyverse)
 require(leaflet)
 require(lubridate)
-require(shiny)
-require(shinythemes)
-require(shinyWidgets)
-library(echarts4r)
-# require(bslib)
-# require(fresh)
-# require(png)
-# require(grid)
-# require(purrr)
-# require(sp)
-# require(rgdal)
 
-## List of functions
-# get_summaries()
-# make_leaflet()
-# make_summary()
+
+
+#' Function to clean the raw eBird data. 
+#'
+#' @param x: The raw data to be cleaned.
+#' @export
+
+clean_data <- function(x) {
+  
+  clean <- tibble(x) %>% 
+    rename_with(tolower) %>% 
+    select(common.name, scientific.name, count, submission.id, location.id, location, 
+           latitude, longitude, date, time, duration.min = duration..min., complete = all.obs.reported, 
+           distance.km = distance.traveled..km., num.observers = number.of.observers) %>% 
+    mutate(date = mdy(date),
+           url = paste0("https://ebird.org/checklist/", submission.id),
+           count = str_replace(count, "x", "1"),
+           count = str_replace(count, "X", "1"),
+           count = as.numeric(count),
+           scientific.name = str_replace(scientific.name, " x \\w*", ""),
+           scientific.name = str_replace(scientific.name, "\\/\\w*", ""),
+           scientific.name = str_extract(scientific.name, "^\\w*\\s\\w*"),
+           scientific.name = str_replace(scientific.name, " sp$", " sp."),
+           common.name = str_remove(common.name, "\\s\\(.*$"),
+           common.name = str_replace(common.name, "Mallard/American Black Duck", "duck sp."),
+           common.name = str_replace(common.name, "Mallard x American Black Duck", "duck sp."),
+           common.name = str_replace(common.name, "Short-billed/Long-billed Dowitcher", "shorebird sp."),
+           common.name = str_replace(common.name, "Common/Arctic Tern", "Sterna sp."),
+           common.name = str_replace(common.name, "Downy/Hairy Woodpecker", "woodpecker sp."),
+           common.name = str_replace(common.name, "Golden-winged x Blue-winged Warbler", "warbler sp."),
+           common.name = str_replace(common.name, "Alder/Willow Flycatcher", "Empidonax sp."),
+           scientific.name = ifelse(common.name == "Empidonax sp." & scientific.name == 
+                                      "Empidonax alnorum", "Empidonax sp.", scientific.name),
+           scientific.name = ifelse(common.name == "duck sp." & scientific.name == 
+                                      "Anas platyrhynchos", "duck sp.", scientific.name),
+           scientific.name = ifelse(common.name == "shorebird sp." & scientific.name == 
+                                      "Limnodromus griseus", "shorebird sp.", scientific.name),
+           scientific.name = ifelse(common.name == "Sterna sp." & scientific.name == 
+                                      "Sterna hirundo", "Sterna sp.", scientific.name),
+           scientific.name = ifelse(common.name == "warbler sp." & scientific.name == 
+                                      "Vermivora chrysoptera", "warbler sp.", scientific.name),
+           scientific.name = ifelse(common.name == "woodpecker sp." & scientific.name == 
+                                      "Dryobates pubescens", "woodpecker sp.", scientific.name)
+    ) %>% 
+    replace(is.na(.), 0) %>% 
+    mutate(trip = ifelse(grepl("Beech Mtn.", location) | 
+                           grepl("Beech Mountain", location), "Beech Mountain", NA),
+           trip = ifelse(grepl("Blagden", location), "Blagden Preserve", trip),
+           trip = ifelse(grepl("Northeast Creek", location), "Canoe and Bird - Northeast Creek", trip),
+           trip = ifelse(grepl("Clark Point Road", location), "Clark Point Road", trip),
+           trip = ifelse(grepl("Essex Woods", location), "Essex Woods in Bangor", trip),
+           trip = ifelse(location == "Somesville" | location == "Mill Pond, Somesville", "Fish Ladders in Somesville", trip),
+           trip = ifelse(grepl("Frenchboro", location), "Frenchboro Preserve on Long Island", trip),
+           trip = ifelse(grepl("Long Pond", location) &
+                           !grepl("Pretty Marsh", location), "Long Pond Loop", trip),
+           trip = ifelse(grepl("Monhegan", location), "Monhegan Island Trip", trip),
+           trip = ifelse(grepl("Otter Point", location), "Otter Point", trip),
+           trip = ifelse(grepl("pelagic", location, ignore.case = T) |
+                           grepl("Petit Manan Island", location) |
+                           grepl("Mt. Desert Rock", location), "Pelagic Seabird Boat Trip", trip),
+           trip = ifelse(grepl("Precipice Trail", location), "Peregrine Falcon Viewing", trip),
+           trip = ifelse(grepl("Hollingsworth Trail", location) |
+                           grepl("Petit Manan Point Rd", location), "Petit Manan NWR", trip),
+           trip = ifelse(grepl("Pretty Marsh", location), "Pretty Marsh/Long Pond Fire Road", trip),
+           trip = ifelse(grepl("Breakneck", location) |
+                           grepl("Witch Hole Pond Carriage", location), "Rockefeller Carriage Road", trip),
+           trip = ifelse(grepl("Saddleback", location), "Saddleback Mountain - Bicknell's Thrush", trip),
+           trip = ifelse(grepl("Schoodic Peninsula", location) |
+                           grepl("Schoodic Point", location) |
+                           grepl("SERC Campus", location) | 
+                           grepl("Schoodic Institute Campus", location) |
+                           grepl("Acadia NP--Blueberry Hill", location) |  
+                           grepl("Schoodic Pt- Blueberry Hill", location) &
+                           !grepl("pelagic", location, ignore.case = T), "Schoodic Peninsula", trip),
+           trip = ifelse(grepl("Seal Cove", location), "Seal Cove - Cape Rd", trip),
+           trip = ifelse(grepl("Sears Island", location), "Sears Island", trip),
+           trip = ifelse(grepl("Ship Harbor Trail", location), "Ship Harbor Nature Trail", trip),
+           trip = ifelse(grepl("Sieur de Monts", location), "Sieur de Monts Spring", trip),
+           trip = ifelse(grepl("Swans Island", location), "Swans Island", trip),
+           trip = ifelse(grepl("Valley Cove", location), "Valley Cove and Flying Mountain", trip),
+           trip = ifelse(grepl("Wonderland Trail", location), "Wonderland", trip))
+  
+  
+  # Write out the cleaned data!
+  write.csv(clean, "outputs/abf_clean_data.csv")
+  write.csv(clean, "app/www/datasets/abf_clean_data.csv")
+
+}
+
+
 
 
 #' Function to produce some summaries from the raw eBird data. 
@@ -142,11 +217,17 @@ leaflet_summary <- function (x) {
   formap <- x #%>% 
   #   mutate(url = paste0("<b><a href='", url, "'>View observation<br>on eBird</a></b>")) 
   
+  maxLong = max(formap$longitude) + 1
+  maxLat = max(formap$latitude)
+  minLong = min(formap$longitude)
+  minLat = min(formap$latitude) - 0.05
+  
   map <- leaflet() %>% 
     addProviderTiles(providers$Esri.WorldImagery) %>% 
     addProviderTiles(providers$Stamen.TonerLines) %>% 
     addProviderTiles(providers$Stamen.TerrainLabels) %>% 
-    addMarkers(formap$longitude, formap$latitude, clusterOptions = markerClusterOptions())
+    addMarkers(formap$longitude, formap$latitude, clusterOptions = markerClusterOptions()) %>%
+    fitBounds(minLong, minLat, maxLong, maxLat)
   
   return(map)
 }
