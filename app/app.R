@@ -41,40 +41,40 @@ ui <- function() {
         
         h3("Observations Explorer", class = "subheader shadow-dark"),
         
-        absolutePanel(id = "logo", class = "card", bottom = 55, right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
+        absolutePanel(id = "logo", bottom = "8%", right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
                       tags$a(href = 'https://schoodicinstitute.org/', tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'))),
         
-        absolutePanel(id = "logo", class = "card", bottom = 55, left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
+        absolutePanel(id = "logo", bottom = "8%", left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
                       tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto'))),
         
-        absolutePanel(id = "logo", class = "card", bottom = 0, left = 0, width = "100%",  height = "6%", fixed = TRUE, draggable = FALSE),
+        absolutePanel(id = "logo1", bottom = 0, left = 0, width = "100%",  height = "6%", fixed = TRUE, draggable = FALSE),
         
-        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 180, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+        absolutePanel(id = "loglink", bottom = 9, right = 180, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
                       actionButton("twitter_share", label = "", icon = icon("twitter"), style = 'padding:6px',
                                    onclick = sprintf("window.open('%s')", 
                                                      "https://twitter.com/SchoodicInst"))),
         
-        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 140, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+        absolutePanel(id = "loglink", bottom = 9, right = 140, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
                       actionButton("facebook_share", label = "", icon = icon("facebook"), style = 'padding:6px',
                                    onclick = sprintf("window.open('%s')", 
                                                      "https://www.facebook.com/SchoodicInstitute"))),
         
-        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 100, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+        absolutePanel(id = "loglink", bottom = 9, right = 100, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
                       actionButton("instagram_share", label = "", icon = icon("instagram"), style = 'padding:6px',
                                    onclick = sprintf("window.open('%s')", 
                                                      "https://www.instagram.com/schoodicinst/"))),
         
-        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 60, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+        absolutePanel(id = "loglink", bottom = 9, right = 60, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
                       actionButton("youtube_share", label = "", icon = icon("youtube"), style = 'padding:6px',
                                    onclick = sprintf("window.open('%s')", 
                                                      "https://www.youtube.com/user/SchoodicInstitute"))),
         
-        absolutePanel(id = "loglink", class = "card", bottom = 9, right = 20, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+        absolutePanel(id = "loglink", bottom = 9, right = 20, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
                       actionButton("linkedin_share", label = "", icon = icon("linkedin"), style = 'padding:6px',
                                    onclick = sprintf("window.open('%s')", 
                                                      "https://www.linkedin.com/company/schoodicinstitute/"))),
         
-        absolutePanel(id = "loglink", class = "card", bottom = 9, left = 20, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
+        absolutePanel(id = "loglink", bottom = 9, left = 20, width = 30, fixed = TRUE, draggable = FALSE, height = "auto",
                       actionButton("facebook_share", label = "", icon = icon("facebook"), style = 'padding:6px',
                                    onclick = sprintf("window.open('%s')", 
                                                      "https://www.facebook.com/AcadiaBirdingFestival/")))
@@ -134,7 +134,8 @@ ui <- function() {
                                   choicesOpt = list(noneSelectedText = "Search for a species"),
                                   options = list(`none-selected-text` = "Select a species...",
                                                  `live-search` = TRUE,
-                                                 size = 14),
+                                                 header = "Search Menu",
+                                                 size = 13),
                                   selected = as.character(unique(fullnosp$common.name)[1]),
                                   multiple = FALSE)),
       
@@ -154,11 +155,11 @@ ui <- function() {
         img = "img/yewa.jpg",
         
         absolutePanel(id = "plots", class = "panel panel-default",
-                      top = "18%", left = "5%", width = "35%", fixed = TRUE,
+                      top = "10%", left = "6%", width = "42%", fixed = TRUE,
                       draggable = FALSE, height = "auto",
                       
-                      h2("Trip Explorer"),
-                      tags$br(),
+                      h1("Explore the Festival Trips"),
+                      br(),
                       
                       pickerInput("trip_select",
                                   label = "Select a trip:",
@@ -166,13 +167,29 @@ ui <- function() {
                                   choicesOpt = list(noneSelectedText = "Select a trip..."),
                                   options = list(`none-selected-text` = "Select a trip...",
                                                  `live-search` = TRUE,
+                                                 header = "Search Menu",
                                                  size = 14),
+                                  width = "100%",
                                   selected = as.character(unique(fullnosp %>% drop_na() %>% pull(trip))[1]),
                                   multiple = FALSE),
-                      tags$br(),
+                      br(),
                       
-                      tableOutput("trip_table")
-                      )
+                      h4("Trip Summary:", align = "left"),
+                      
+                      htmlOutput("trip_text", align = "left", class = "thick"),br(),
+                      
+                      leafletOutput("tripmap", width = "100%", height = 330),
+                      
+                      h6("Use the scroll wheel, or double click to zoom in. Click and drag 
+                         to move around.", align = "left")),
+      
+        absolutePanel(id = "plots", class = "panel panel-default",
+                      bottom = "1%", left = "50%", width = "20%", fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+        
+                      h3("Download the species list here:"),br(),
+                      downloadButton("downloadCsv", "Download as CSV"),br(),br())
+        
       ),
     
     
@@ -191,7 +208,7 @@ ui <- function() {
                       h4("Some text descibing plots")),
         
         absolutePanel(class = "panel panel-default",
-                      bottom = "5%", left = "1%", width = "43%", fixed = TRUE,
+                      bottom = "0%", left = "1%", width = "43%", fixed = TRUE,
                       draggable = FALSE, height = "auto",
 
                       plotOutput("spy_plot")),
@@ -200,7 +217,9 @@ ui <- function() {
                       bottom = "0%", left = "45%", width = "51%", fixed = TRUE,
                       draggable = FALSE, height = "auto",
 
-                      plotOutput("tpy_plot"))
+                      plotOutput("tpy_plot")),
+        
+        
       ),
 
       
@@ -264,7 +283,7 @@ server <- function(input, output, session) {
   
   ## Summary leaflet map of all obs
   output$mapsum <- renderLeaflet({ 
-    leaflet_summary(read.csv("www/datasets/abf_clean_data.csv"))
+    leaflet_summary(fullnosp)
   })
   
   ## Number of species recorded
@@ -289,7 +308,7 @@ server <- function(input, output, session) {
   
   ## Reactive data frame for Species Explorer tab
   species_reactive_db <- reactive({
-    read.csv("www/datasets/abf_clean_data.csv") %>% 
+    fullnosp %>% 
       filter(common.name == paste(input$species_select))
   })
   
@@ -305,14 +324,50 @@ server <- function(input, output, session) {
   
   ## Reactive data frame for Trip Explorer tab
   trip_reactive_db <- reactive({
-    read.csv("www/datasets/abf_clean_data.csv") %>% 
+    fullnosp %>% 
       filter(trip == paste(input$trip_select))
   })
   
   ## Reactive output to display summary for trips for Trip Explorer tab - uses trip_reactive_db
-  output$trip_table <- renderTable({ 
-    trip_summary(trip_reactive_db())
+  output$trip_text <- renderUI({ 
+    str1 = paste("Total species recorded: ", trip_summary(trip_reactive_db())[1,2])
+    str2 = paste("Total checklists submitted: ", trip_summary(trip_reactive_db())[2,2])
+    str3 = paste("Years run: ", trip_summary(trip_reactive_db())[3,2])
+    str4 = paste("Average number of participants: ", trip_summary(trip_reactive_db())[4,2])
+
+    HTML(paste(str1, str2, str3, str4, sep = '<br/>'))
   })
+  
+  ## Reactive leaflet map for trip locations
+  output$tripmap <- renderLeaflet({ 
+    trip_leaflet(trip_reactive_db())
+  })
+  
+  ## Output to download data as a CSV
+  output$downloadCsv <- downloadHandler(
+    filename = function() {
+      paste0(str_replace_all(input$trip_select, "[:space:]", "_"), "_trip_list.csv")
+    },
+    content = function(file) {
+      triplist = fullnosp %>% 
+        filter(trip == paste(input$trip_select)) %>% 
+        select(common.name, scientific.name, date, count) %>% 
+        mutate(date = year(date)) %>% 
+        group_by(common.name, scientific.name, date) %>% 
+        summarize(count = sum(count), .groups = "drop") %>% 
+        pivot_wider(names_from = date, values_from = count) %>% 
+        mutate_all(~replace(., is.na(.), 0)) %>% 
+        select(common.name, scientific.name, sort(names(.[-c(1:2)])))
+        
+      
+      # data = trip_reactive_db() 
+      # 
+      # triplist = unique(data$common.name))%>% 
+      #   arrange(common.name) %>% 
+      #   rename(common.name = x)
+      
+      write.csv(triplist, file, row.names = F)
+    })
   
   ## Species/year ggplot for Trends tab
   output$spy_plot <- renderPlot({
@@ -322,6 +377,14 @@ server <- function(input, output, session) {
   ## Total birds/year ggplot for Trends tab
   output$tpy_plot <- renderPlot({
     tpy_plot(read.csv("www/datasets/abf_clean_data.csv"))
+  })
+  
+  output$partypy_plot <- renderPlot({
+    partypy_plot(read.csv("www/datasets/abf_clean_data.csv"))
+  })
+  
+  output$trippy_plot <- renderPlot({
+    trippy_plot(read.csv("www/datasets/abf_clean_data.csv"))
   })
   
 }

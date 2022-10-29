@@ -1,5 +1,13 @@
 source("scripts/abf_functions.R")
-#source("app/abf_app_funcs.R")
+source("app/abf_app_funcs.R")
+
+
+dat <- read.csv("app/www/datasets/abf_participants_trips.csv")
+
+trippy_plot(dat)
+partypy_plot(dat)
+
+
 
 data <- read.csv("outputs/abf_clean_data.csv")
 

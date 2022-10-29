@@ -6,6 +6,11 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
 }
 
+.thick {
+  font-weight: 600;
+  font-size: 15;
+}
+
 .header{
   position: fixed;
   font-size: 60px;
@@ -98,9 +103,15 @@ h1, h2, h3, h4, h5, h6 {
   color: #000000;
 }
 
-#logo {
+#logo1 {
   background-color: #3E4A57;
   padding: 5px 5px 5px 5px;
+}
+
+#logo {
+  background-color: white;
+  padding: 1px 1px 1px 1px;
+  box-shadow: 2px 2px 2px 1px gray;
 }
 
 #loglink {

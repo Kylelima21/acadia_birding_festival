@@ -11,7 +11,7 @@ require(lubridate)
 
 clean_data <- function(x) {
   
-  clean <- tibble(x) %>% 
+  dat <- tibble(x) %>% 
     rename_with(tolower) %>% 
     select(common.name, scientific.name, count, submission.id, location.id, location, 
            latitude, longitude, date, time, duration.min = duration..min., complete = all.obs.reported, 
@@ -44,20 +44,19 @@ clean_data <- function(x) {
            scientific.name = ifelse(common.name == "warbler sp." & scientific.name == 
                                       "Vermivora chrysoptera", "warbler sp.", scientific.name),
            scientific.name = ifelse(common.name == "woodpecker sp." & scientific.name == 
-                                      "Dryobates pubescens", "woodpecker sp.", scientific.name)
-    ) %>% 
+                                      "Dryobates pubescens", "woodpecker sp.", scientific.name)) %>% 
     replace(is.na(.), 0) %>% 
     mutate(trip = ifelse(grepl("Beech Mtn.", location) | 
                            grepl("Beech Mountain", location), "Beech Mountain", NA),
            trip = ifelse(grepl("Blagden", location), "Blagden Preserve", trip),
-           trip = ifelse(grepl("Northeast Creek", location), "Canoe and Bird - Northeast Creek", trip),
+           trip = ifelse(grepl("Northeast Creek", location), "Canoe and Bird at Northeast Creek", trip),
            trip = ifelse(grepl("Clark Point Road", location), "Clark Point Road", trip),
            trip = ifelse(grepl("Essex Woods", location), "Essex Woods in Bangor", trip),
            trip = ifelse(location == "Somesville" | location == "Mill Pond, Somesville", "Fish Ladders in Somesville", trip),
            trip = ifelse(grepl("Frenchboro", location), "Frenchboro Preserve on Long Island", trip),
            trip = ifelse(grepl("Long Pond", location) &
                            !grepl("Pretty Marsh", location), "Long Pond Loop", trip),
-           trip = ifelse(grepl("Monhegan", location), "Monhegan Island Trip", trip),
+           trip = ifelse(grepl("Monhegan", location), "Monhegan Island", trip),
            trip = ifelse(grepl("Otter Point", location), "Otter Point", trip),
            trip = ifelse(grepl("pelagic", location, ignore.case = T) |
                            grepl("Petit Manan Island", location) |
@@ -65,10 +64,10 @@ clean_data <- function(x) {
            trip = ifelse(grepl("Precipice Trail", location), "Peregrine Falcon Viewing", trip),
            trip = ifelse(grepl("Hollingsworth Trail", location) |
                            grepl("Petit Manan Point Rd", location), "Petit Manan NWR", trip),
-           trip = ifelse(grepl("Pretty Marsh", location), "Pretty Marsh/Long Pond Fire Road", trip),
+           trip = ifelse(grepl("Pretty Marsh", location), "Pretty Marsh and Long Pond Fire Road", trip),
            trip = ifelse(grepl("Breakneck", location) |
                            grepl("Witch Hole Pond Carriage", location), "Rockefeller Carriage Road", trip),
-           trip = ifelse(grepl("Saddleback", location), "Saddleback Mountain - Bicknell's Thrush", trip),
+           trip = ifelse(grepl("Saddleback", location), "Saddleback Mountain for Bicknell's Thrush", trip),
            trip = ifelse(grepl("Schoodic Peninsula", location) |
                            grepl("Schoodic Point", location) |
                            grepl("SERC Campus", location) | 
@@ -76,7 +75,7 @@ clean_data <- function(x) {
                            grepl("Acadia NP--Blueberry Hill", location) |  
                            grepl("Schoodic Pt- Blueberry Hill", location) &
                            !grepl("pelagic", location, ignore.case = T), "Schoodic Peninsula", trip),
-           trip = ifelse(grepl("Seal Cove", location), "Seal Cove - Cape Rd", trip),
+           trip = ifelse(grepl("Seal Cove", location), "Seal Cove along Cape Rd", trip),
            trip = ifelse(grepl("Sears Island", location), "Sears Island", trip),
            trip = ifelse(grepl("Ship Harbor Trail", location), "Ship Harbor Nature Trail", trip),
            trip = ifelse(grepl("Sieur de Monts", location), "Sieur de Monts Spring", trip),
@@ -84,10 +83,12 @@ clean_data <- function(x) {
            trip = ifelse(grepl("Valley Cove", location), "Valley Cove and Flying Mountain", trip),
            trip = ifelse(grepl("Wonderland Trail", location), "Wonderland", trip))
   
+  clean <- dat %>% 
+    left_join(read.csv("data/trip_locations.csv"), by = "trip")
   
   # Write out the cleaned data!
-  write.csv(clean, "outputs/abf_clean_data.csv")
-  write.csv(clean, "app/www/datasets/abf_clean_data.csv")
+  write.csv(clean, "outputs/abf_clean_data.csv", row.names = F)
+  write.csv(clean, "app/www/datasets/abf_clean_data.csv", row.names = F)
 
 }
 
