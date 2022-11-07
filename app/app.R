@@ -18,8 +18,9 @@ ui <- function() {
   
   ## Set up and menu creation
   pagePiling(
-    sections.color = c('white', 'white', 'white', '#607B8B', '#607B8B', '#4A708B'),
-    opts = list(easing = "swing"),
+    sections.color = c('white', 'white', 'white', 'white', '#607B8B', '#4A708B'),
+    opts = list(direction = "vertical",
+                css3 = "true"),
     menu = c(
       "Home" = "home",
       "Summary Map" = "map",
@@ -152,17 +153,42 @@ ui <- function() {
       pageSectionImage(
         center = TRUE,
         menu = "locs",
-        img = "img/yewa.jpg",
+        img = "img/bith.jpg",
         
-        absolutePanel(id = "plots", class = "panel panel-default",
-                      top = "10%", left = "6%", width = "42%", fixed = TRUE,
+        h2(textOutput("triptitle"), class = "triphead black"),
+        
+        absolutePanel(id = "trips", class = "panel panel-default",
+                      top = "32%", left = "2%", width = "47%", fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+
+                      h2("Trip Description", align = "left", class = "white"),
+                      
+                      h6(textOutput("diff"), align = "left", class = "white"),
+                      h5(textOutput("descrip"), align = "left", class = "white"),br(),
+                      
+                      h4("Download the species list here:", class = "white"),
+                         downloadButton("downloadCsv", "Download as CSV"),br(),br()),
+        
+        absolutePanel(id = "trips", class = "panel panel-default",
+                      top = "16.5%", right = "4%", width = "45%", fixed = TRUE,
+                      draggable = FALSE, height = "auto",
+        
+                      h2("Trip Summary", align = "left", class = "white"),
+
+                      h4(htmlOutput("trip_text", align = "left", class = "white")),br(),br(),
+                      
+                      leafletOutput("tripmap", width = "100%", height = 370),
+
+                      h6("Use the scroll wheel, or double click to zoom in. Click and drag
+                         to move around.", align = "left", class = "white")),
+        
+        absolutePanel(id = "trips", class = "panel panel-default",
+                      top = "16.5%", left = "9.5%", width = "30%", fixed = TRUE,
                       draggable = FALSE, height = "auto",
                       
-                      h1("Explore the Festival Trips"),
-                      br(),
+                      h3("Select a trip:", align = "left", class = "white"),
                       
                       pickerInput("trip_select",
-                                  label = "Select a trip:",
                                   choices = as.character(unique(fullnosp %>% drop_na() %>% pull(trip))),
                                   choicesOpt = list(noneSelectedText = "Select a trip..."),
                                   options = list(`none-selected-text` = "Select a trip...",
@@ -171,25 +197,7 @@ ui <- function() {
                                                  size = 14),
                                   width = "100%",
                                   selected = as.character(unique(fullnosp %>% drop_na() %>% pull(trip))[1]),
-                                  multiple = FALSE),
-                      br(),
-                      
-                      h4("Trip Summary:", align = "left"),
-                      
-                      htmlOutput("trip_text", align = "left", class = "thick"),br(),
-                      
-                      leafletOutput("tripmap", width = "100%", height = 330),
-                      
-                      h6("Use the scroll wheel, or double click to zoom in. Click and drag 
-                         to move around.", align = "left")),
-      
-        absolutePanel(id = "plots", class = "panel panel-default",
-                      bottom = "1%", left = "50%", width = "20%", fixed = TRUE,
-                      draggable = FALSE, height = "auto",
-        
-                      h3("Download the species list here:"),br(),
-                      downloadButton("downloadCsv", "Download as CSV"),br(),br())
-        
+                                  multiple = FALSE))
       ),
     
     
@@ -197,29 +205,32 @@ ui <- function() {
       pageSectionImage(
         center = TRUE,
         menu = "trends",
-        img = "img/btnw.jpeg",
+        img = "img/monhegan.jpg",
         
-        h1("Festival Trends Through Time", class = "headerl black shadow-dm"),
+        h1("Festival Trends Through Time", class = "triphead black"),
         
-        absolutePanel(class = "panel panel-default",
-                      top = "18%", left = "5%", width = "35%", fixed = TRUE,
-                      draggable = FALSE, height = "auto",
+        absolutePanel(id = "plots", class = "panel",
+                      top = "23%", left = "10%", 
+                      width = "80%", height = "70%",
+                      fixed = TRUE, draggable = FALSE,
 
-                      h4("Some text descibing plots")),
-        
-        absolutePanel(class = "panel panel-default",
-                      bottom = "0%", left = "1%", width = "43%", fixed = TRUE,
-                      draggable = FALSE, height = "auto",
+                      tabsetPanel(type = "pills",
+                                  tabPanel("Species", plotOutput("spy_plot",
+                                                                        height = 450,
+                                                                        width = "100%")),
+                                  tabPanel("Total Birds", plotOutput("tpy_plot",
+                                                                     height = 450,
+                                                                     width = "100%")),
+                                  tabPanel("Participants", plotOutput("partypy_plot",
+                                                                        height = 450,
+                                                                        width = "100%")),
+                                  tabPanel("Trips", plotOutput("trippy_plot",
+                                                                        height = 450,
+                                                                        width = "100%"))
+                                  
+          )
+        )
 
-                      plotOutput("spy_plot")),
-        
-        absolutePanel(class = "panel panel-default",
-                      bottom = "0%", left = "45%", width = "51%", fixed = TRUE,
-                      draggable = FALSE, height = "auto",
-
-                      plotOutput("tpy_plot")),
-        
-        
       ),
 
       
@@ -227,47 +238,54 @@ ui <- function() {
       pageSectionImage(
         menu = "about",
         center = TRUE,
-        img = "img/spgr.jpg",
+        img = "img/yewa.jpg",
         
         absolutePanel(id = "about", class = "panel panel-default",
-                      top = 75, right = 150, width = 540, fixed = TRUE,
+                      top = 70, left = 20, width = 820, fixed = TRUE,
                       draggable = FALSE, height = "auto",
                       
-                      h1("About this site:", class = "white"),
-                      tags$br(),
-                      tags$br(),
-                      h4("• This Shiny application was created by Schoodic Institute at 
-                              Acadia National Park and the Acadia Birding Festival.",
-                         class = 'white', align = "left"),
-                      tags$br(),
-                      h4("• If you have any questions about this website, please contact 
-                         Kyle Lima (klima@schoodicinstitute.org).", class = 'white', align = "left"),
-                      tags$br(),
-                      h4("• For questions or information about the Acadia Birding Festival, 
-                         please contact Becky Marvil (beckym@acadiabirdingfestival.com).",
-                         class = 'white', align = "left"),
-                      tags$br(),
-                      h4("• Please checkout our websites for more information by clicking on the 
-                      logos in the bottom corners of this page.",
-                         class = 'white', align = "left"),
-                      tags$br(),
-                      tags$br(),
-                      tags$br(),
-                      tags$br(),
-                      ),
-        
+                      h4("Last updated"),
+                      "Fall 2022.",
+                      br(),br(),
                       
+                      h4("Background"),
+                      "This application was built to display eBird data that the 
+                      Acadia Birding Festival has collected since 2010, as well as provide 
+                      an interactive exploration tool for festival participants.",
+                      br(),br(),
+                      
+                      h4("Code"),
+                      "Code and required elements to generate this Shiny app are available 
+                      on ", a(href="https://github.com/Kylelima21/acadia_birding_festival", 
+                              "Github."),
+                      br(),br(),
+                      
+                      h4("Sources"),
+                      "Data supplied by ", a(href="https://www.ebird.org/", "eBird."),
+                      br(),br(),
+                      
+                      h4("Authors"),
+                      "Kyle Lima, Schoodic Institute at Acadia National Park", br(),
+                      "Becky Marvil, Acadia Birding Festival",
+                      br(),br(),
+                      
+                      h4("Get in touch!"),
+                      "If you have any questions about the Acadia Birding Festival, please 
+                      contact Becky Marvil: ", a(href="beckym@acadiabirdingfestival.com", 
+                                                 "beckym@acadiabirdingfestival.com"),
+                      br(),br(),
+                      "You can direct questions about this application or about Schoodic Institute
+                      to Kyle Lima: ", a(href="klima@schoodicinstitute.org", 
+                                         "klima@schoodicinstitute.org"),
+                      br(),br(),
+                      "Please checkout our websites for more information by clicking on the 
+                      logos in the bottom corners of this page."),
+        
         absolutePanel(id = "logo", class = "card", bottom = 25, right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
                       tags$a(href = 'https://schoodicinstitute.org/', tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'))),
         
         absolutePanel(id = "logo", class = "card", bottom = 25, left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto'))),
-        
-        absolutePanel(class = "panel",
-                      bottom = "27%", right = 325, width = 200, fixed = TRUE,
-                      draggable = FALSE, height = "auto",
-                      
-                      pageButtonTo(h4("Return home", class = "black"), section = 1))
+                      tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto')))
       )
   )
 }
@@ -328,14 +346,30 @@ server <- function(input, output, session) {
       filter(trip == paste(input$trip_select))
   })
   
+  ## Trip title
+  output$triptitle <- renderText({
+    trip_reactive_db()$trip[1]
+  })
+  
   ## Reactive output to display summary for trips for Trip Explorer tab - uses trip_reactive_db
   output$trip_text <- renderUI({ 
-    str1 = paste("Total species recorded: ", trip_summary(trip_reactive_db())[1,2])
-    str2 = paste("Total checklists submitted: ", trip_summary(trip_reactive_db())[2,2])
-    str3 = paste("Years run: ", trip_summary(trip_reactive_db())[3,2])
-    str4 = paste("Average number of participants: ", trip_summary(trip_reactive_db())[4,2])
+    str1 = paste("• ", trip_summary(trip_reactive_db())[1,2], " species recorded.")
+    str2 = paste("• ", trip_summary(trip_reactive_db())[2,2], " checklists submitted.")
+    str3 = paste("• ", trip_summary(trip_reactive_db())[3,2], " years run.")
+    str4 = paste("• ", trip_summary(trip_reactive_db())[4,2], " participants on the average trip.")
 
-    HTML(paste(str1, str2, str3, str4, sep = '<br/>'))
+    HTML(paste("<p style='line-height:1.7'>", paste(str1, str2, str3, str4, sep = '<br/>'),
+               "</p>"))
+  })
+  
+  ## Trip description
+  output$descrip <- renderText({
+    trip_reactive_db()$descrip[1]
+  })
+  
+  ## Trip difficulty
+  output$diff <- renderText({
+    trip_reactive_db()$diff[1]
   })
   
   ## Reactive leaflet map for trip locations
@@ -359,13 +393,6 @@ server <- function(input, output, session) {
         mutate_all(~replace(., is.na(.), 0)) %>% 
         select(common.name, scientific.name, sort(names(.[-c(1:2)])))
         
-      
-      # data = trip_reactive_db() 
-      # 
-      # triplist = unique(data$common.name))%>% 
-      #   arrange(common.name) %>% 
-      #   rename(common.name = x)
-      
       write.csv(triplist, file, row.names = F)
     })
   
@@ -380,11 +407,11 @@ server <- function(input, output, session) {
   })
   
   output$partypy_plot <- renderPlot({
-    partypy_plot(read.csv("www/datasets/abf_clean_data.csv"))
+    partypy_plot(read.csv("www/datasets/abf_participants_trips.csv"))
   })
   
   output$trippy_plot <- renderPlot({
-    trippy_plot(read.csv("www/datasets/abf_clean_data.csv"))
+    trippy_plot(read.csv("www/datasets/abf_participants_trips.csv"))
   })
   
 }

@@ -54,8 +54,6 @@ clean_data <- function(x) {
            trip = ifelse(grepl("Essex Woods", location), "Essex Woods in Bangor", trip),
            trip = ifelse(location == "Somesville" | location == "Mill Pond, Somesville", "Fish Ladders in Somesville", trip),
            trip = ifelse(grepl("Frenchboro", location), "Frenchboro Preserve on Long Island", trip),
-           trip = ifelse(grepl("Long Pond", location) &
-                           !grepl("Pretty Marsh", location), "Long Pond Loop", trip),
            trip = ifelse(grepl("Monhegan", location), "Monhegan Island", trip),
            trip = ifelse(grepl("Otter Point", location), "Otter Point", trip),
            trip = ifelse(grepl("pelagic", location, ignore.case = T) |
@@ -84,7 +82,8 @@ clean_data <- function(x) {
            trip = ifelse(grepl("Wonderland Trail", location), "Wonderland", trip))
   
   clean <- dat %>% 
-    left_join(read.csv("data/trip_locations.csv"), by = "trip")
+    left_join(read.csv("data/trip_locations.csv"), by = "trip") %>% 
+    left_join(read.csv("data/trip_descrip.csv"), by = "trip")
   
   # Write out the cleaned data!
   write.csv(clean, "outputs/abf_clean_data.csv", row.names = F)
