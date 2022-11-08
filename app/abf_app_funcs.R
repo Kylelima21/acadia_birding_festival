@@ -6,6 +6,9 @@ require(shinythemes)
 require(shinyWidgets)
 require(echarts4r)
 require(fullPage)
+require(ggplot2)
+require(viridis)
+require(scales)
 
 
 ## List of functions
@@ -229,25 +232,28 @@ sp_trends <- function(x) {
 spy_plot <- function(x) {
   
   plot <- x %>% 
-    mutate(year = as.character(year)) %>% 
+    mutate(year = as.character(year)) %>%
     filter(year > 2009) %>% 
-    ggplot(aes(year, total, fill = total)) +
-    geom_bar(stat = "identity", color = "black") +
-    geom_text(aes(label = total), vjust = -1, size = 5) +
+    ggplot(aes(year, total, fill = total, group = 1)) +
+    #geom_bar(stat = "identity", color = "black") +
+    #geom_text(aes(label = total), vjust = -1, size = 6) +
+    geom_line(size = 1.5, color = "navyblue") +
+    geom_point(aes(fill = total), shape = 21, size = 3.5, color = "black") +
     scale_y_continuous(expand = c(0,0), limits = c(0,220)) +
     scale_x_discrete(breaks = x$year[seq(1, length(x$year), by = 2)]) +
-    scale_fill_viridis(option = "viridis",
+    scale_fill_viridis(option = "mako",
                        values = rescale(c(0, 140, max(x$total))),
                        n.breaks = 4) +
     labs(x = "Year", y = "Total species", title = "Number of Species Observed Each Year") +
     theme_classic() +
     theme(legend.title = element_blank(),
           legend.key.size = unit(1, "cm"),
-          legend.text = element_text(color = "black", size = 14),
-          axis.text = element_text(color = "black", size = 14),
-          axis.title = element_text(color = "black", size = 16),
+          legend.text = element_text(color = "black", size = 15),
+          axis.text = element_text(color = "black", size = 15),
+          axis.title = element_text(color = "black", size = 18),
+          axis.title.x = element_text(margin = margin(t = 15, r = 0, b = 0, l = 0)),
           plot.title = element_text(size = 24, hjust = 0.5),
-          plot.background = element_rect(fill = "gray97", color = "black", size = 2),
+          plot.background = element_rect(fill = "gray97", color = "gray97"),
           panel.background = element_rect(fill = "gray97"),
           legend.background = element_rect(fill = "gray97"))
   
@@ -266,32 +272,118 @@ spy_plot <- function(x) {
 
 tpy_plot <- function(x) {
   
-  plot <- x %>% 
+  data <- x %>% 
     mutate(year = year(date)) %>% 
     group_by(year) %>% 
     summarise(count = sum(count), .groups = "drop") %>% 
     filter(year > 2009) %>% 
-    mutate(year = as.character(year)) %>% 
-    ggplot(aes(year, count, fill = count)) +
-    geom_bar(stat = "identity", color = "black") +
-    geom_text(aes(label = comma(count)), vjust = -1, size = 5) +
-    scale_y_continuous(expand = c(0,0), limits = c(0,20100)) +
+    bind_rows(., data.frame(year = 2020, count = 0)) %>% 
+    arrange(year) %>% 
+    mutate(year = as.character(year))
+  
+  plot <- data %>% 
+    ggplot(aes(year, count, fill = count, group = 1)) +
+    #geom_bar(stat = "identity", color = "black") +
+    #geom_text(aes(label = comma(count)), vjust = -1.5, hjust = 0.5, size = 5) +
+    geom_line(size = 1.5, color = "navyblue") +
+    geom_point(aes(fill = count), shape = 21, size = 3.5, color = "black") +
+    scale_y_continuous(expand = c(0,0), limits = c(0,(max(data$count)) + 2000)) +
+    scale_x_discrete(breaks = data$year[seq(1, length(data$year), by = 2)]) +
     scale_fill_viridis(option = "viridis",
-                       values = rescale(c(0, 140, max(x$count))),
+                       values = rescale(c(0, 10000, max(data$count))),
                        n.breaks = 4) +
-    labs(x = "Year", y = "Total individuals", title = "Total Number of Birds Counted Each Year") +
+    labs(x = "Year", y = "Total individuals", title = "Number of Birds Counted Each Year") +
     theme_classic() +
     theme(legend.title = element_blank(),
           legend.key.size = unit(1, "cm"),
-          legend.text = element_text(color = "black", size = 14),
-          axis.text = element_text(color = "black", size = 14),
-          axis.title = element_text(color = "black", size = 16),
+          legend.text = element_text(color = "black", size = 15),
+          axis.text = element_text(color = "black", size = 15),
+          axis.title = element_text(color = "black", size = 18),
+          axis.title.x = element_text(margin = margin(t = 15, r = 0, b = 0, l = 0)),
           plot.title = element_text(size = 24, hjust = 0.5),
-          plot.background = element_rect(fill = "gray97", color = "black", size = 2),
+          plot.background = element_rect(fill = "gray97", color = "gray97"),
           panel.background = element_rect(fill = "gray97"),
           legend.background = element_rect(fill = "gray97"))
   
   return(plot)
+}
+
+
+
+
+#' Function to produce a graph of the number of trips/year
+#'
+#' @return A bar graph of yearly observations
+#' @param x: A data frame of observations.
+#' @export
+
+partypy_plot <- function(x) {
+  
+  plot <- x %>% 
+    mutate(year = as.character(year)) %>% 
+    filter(year > 2009) %>% 
+    ggplot(aes(year, participants, fill = participants, group = 1)) +
+    geom_line(size = 1.5, color = "navyblue") +
+    geom_point(aes(fill = participants), shape = 21, size = 3.5, color = "black") +
+    scale_y_continuous(expand = c(0,0), limits = c(0,(max(x$participants)) + 50)) +
+    scale_x_discrete(breaks = x$year[seq(1, length(x$year), by = 2)]) +
+    scale_fill_viridis(option = "rocket",
+                       values = rescale(c(0, 200, max(x$participants))),
+                       n.breaks = 4) +
+    labs(x = "Year", y = "Total participants", title = "Number of Participants Each Year") +
+    theme_classic() +
+    theme(legend.title = element_blank(),
+          legend.key.size = unit(1, "cm"),
+          legend.text = element_text(color = "black", size = 15),
+          axis.text = element_text(color = "black", size = 15),
+          axis.title = element_text(color = "black", size = 18),
+          axis.title.x = element_text(margin = margin(t = 15, r = 0, b = 0, l = 0)),
+          plot.title = element_text(size = 24, hjust = 0.5),
+          plot.background = element_rect(fill = "gray97", color = "gray97"),
+          panel.background = element_rect(fill = "gray97"),
+          legend.background = element_rect(fill = "gray97"))
+  
+  return(plot)
+  
+}
+
+
+
+
+#' Function to produce a graph of the number of trips/year
+#'
+#' @return A bar graph of yearly observations
+#' @param x: A data frame of observations.
+#' @export
+
+trippy_plot <- function(x) {
+  
+  plot <- x %>% 
+    mutate(year = as.character(year)) %>% 
+    filter(year > 2009) %>% 
+    ggplot(aes(year, trips, fill = trips, group = 1)) +
+    geom_line(size = 1.5, color = "navyblue") +
+    geom_point(aes(fill = trips), shape = 21, size = 3.5, color = "black") +
+    scale_y_continuous(expand = c(0,0), limits = c(0,(max(x$trips)) + 20)) +
+    scale_x_discrete(breaks = x$year[seq(1, length(x$year), by = 2)]) +
+    scale_fill_viridis(option = "cividis",
+                       values = rescale(c(0, 40, max(x$trips))),
+                       n.breaks = 4) +
+    labs(x = "Year", y = "Total trips", title = "Number of Trips Led Each Year") +
+    theme_classic() +
+    theme(legend.title = element_blank(),
+          legend.key.size = unit(1, "cm"),
+          legend.text = element_text(color = "black", size = 15),
+          axis.text = element_text(color = "black", size = 15),
+          axis.title = element_text(color = "black", size = 18),
+          axis.title.x = element_text(margin = margin(t = 15, r = 0, b = 0, l = 0)),
+          plot.title = element_text(size = 24, hjust = 0.5),
+          plot.background = element_rect(fill = "gray97", color = "gray97"),
+          panel.background = element_rect(fill = "gray97"),
+          legend.background = element_rect(fill = "gray97"))
+  
+  return(plot)
+  
 }
 
 
@@ -328,4 +420,32 @@ trip_summary <- function(x) {
   
   
   return(output)
+}
+
+
+
+
+#' Function to produce an interactive leaflet map widget of trip locations
+#'
+#' @return A leaflet map widget of trip locations.
+#' @param x: A data frame of observations.
+#' @export
+
+trip_leaflet <- function (x) {
+  
+  formap <- x
+
+  maxLong = max(formap$trip.long) + 0.8
+  maxLat = max(formap$trip.lat) + 0.8
+  minLong = min(formap$trip.long) - 0.8
+  minLat = min(formap$trip.lat) - 0.8
+  
+  map <- leaflet(options = leafletOptions(zoomControl = FALSE)) %>% 
+    addProviderTiles(providers$Esri.WorldImagery) %>% 
+    addProviderTiles(providers$Stamen.TonerLines, options = providerTileOptions(opacity = 0.35)) %>% 
+    addProviderTiles(providers$CartoDB.PositronOnlyLabels) %>% 
+    addMarkers(formap$trip.long, formap$trip.lat)%>%
+    fitBounds(minLong, minLat, maxLong, maxLat)
+  
+  return(map)
 }

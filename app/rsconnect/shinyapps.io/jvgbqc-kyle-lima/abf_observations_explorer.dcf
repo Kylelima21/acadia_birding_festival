@@ -1,0 +1,13 @@
+name: abf_observations_explorer
+title: abf_observations_explorer
+username:
+account: jvgbqc-kyle-lima
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7551800
+bundleId: 6486181
+url: https://jvgbqc-kyle-lima.shinyapps.io/abf_observations_explorer/
+when: 1667856229.19104
+lastSyncTime: 1667856229.19105
+asMultiple: FALSE
+asStatic: FALSE

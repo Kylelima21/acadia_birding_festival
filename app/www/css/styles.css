@@ -6,9 +6,24 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
 }
 
+.reg {
+  font-weight: 500;
+}
+
+.thick {
+  font-weight: 500;
+}
+
 .header{
   position: fixed;
   font-size: 60px;
+  top: 50px;
+  width: 100%;
+}
+
+.triphead{
+  position: fixed;
+  font-size: 50px;
   top: 50px;
   width: 100%;
 }
@@ -98,9 +113,15 @@ h1, h2, h3, h4, h5, h6 {
   color: #000000;
 }
 
-#logo {
+#logo1 {
   background-color: #3E4A57;
   padding: 5px 5px 5px 5px;
+}
+
+#logo {
+  background-color: white;
+  padding: 1px 1px 1px 1px;
+  box-shadow: 2px 2px 2px 1px gray;
 }
 
 #loglink {
@@ -154,20 +175,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #plots {
-  background-color: white;
-  padding: 0 10px 10px 10px;
+  background-color: #F7F7F7;
+  border-color: black;
+  padding: 10px 10px 10px 10px;
+  box-shadow: 1px 1px 1px 1px #333333;
 }
 
 #darkplots {
   background-color: #1A1A1A;
 }
 
-#button1 {
-  margin: auto;
-  background-color: #0A6716;
+#trips {
+  background-color: #3E4A57;
+  border-color: black;
+  padding: 0 10px 10px 10px;
+  box-shadow: 1px 1px 1px 1px #333333;
 }
 
 #about {
-  background-color: #3E4A57;
-  padding: 0 10px 10px 10px;
+  background-color: white;
+  padding: 15px 15px 15px 15px;
+  text-align: left;
+  box-shadow: 1px 1px 1px 1px #333333;
+  border-color: black;
 }
