@@ -43,10 +43,10 @@ ui <- function() {
         h3("Observations Explorer", class = "subheader shadow-dark"),
         
         absolutePanel(id = "logo", bottom = "8%", right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(href = 'https://schoodicinstitute.org/', tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'))),
+                      img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto')),
         
         absolutePanel(id = "logo", bottom = "8%", left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto'))),
+                      img(src = 'img/abf_logo.png', height = '100%', width = 'auto')),
         
         absolutePanel(id = "logo1", bottom = 0, left = 0, width = "100%",  height = "6%", fixed = TRUE, draggable = FALSE),
         
@@ -136,7 +136,7 @@ ui <- function() {
                                   options = list(`none-selected-text` = "Select a species...",
                                                  `live-search` = TRUE,
                                                  header = "Search Menu",
-                                                 size = 13),
+                                                 size = 12),
                                   selected = as.character(unique(fullnosp$common.name)[1]),
                                   multiple = FALSE)),
       
@@ -164,7 +164,7 @@ ui <- function() {
                       h2("Trip Description", align = "left", class = "white"),
                       
                       h6(textOutput("diff"), align = "left", class = "white"),
-                      h5(textOutput("descrip"), align = "left", class = "white"),br(),
+                      h5(textOutput("descrip"), align = "left", class = "white"),
                       
                       h4("Download the species list here:", class = "white"),
                          downloadButton("downloadCsv", "Download as CSV"),br(),br()),
@@ -175,7 +175,7 @@ ui <- function() {
         
                       h2("Trip Summary", align = "left", class = "white"),
 
-                      h4(htmlOutput("trip_text", align = "left", class = "white")),br(),br(),
+                      h4(htmlOutput("trip_text", align = "left", class = "white")),br(),
                       
                       leafletOutput("tripmap", width = "100%", height = 370),
 
@@ -241,51 +241,52 @@ ui <- function() {
         img = "img/yewa.jpg",
         
         absolutePanel(id = "about", class = "panel panel-default",
-                      top = 70, left = 20, width = 820, fixed = TRUE,
+                      top = 70, left = 20, width = 817, fixed = TRUE,
                       draggable = FALSE, height = "auto",
                       
                       h4("Last updated"),
                       "Fall 2022.",
-                      br(),br(),
+                      br(),
                       
                       h4("Background"),
                       "This application was built to display eBird data that the 
                       Acadia Birding Festival has collected since 2010, as well as provide 
                       an interactive exploration tool for festival participants.",
-                      br(),br(),
+                      br(),
                       
                       h4("Code"),
                       "Code and required elements to generate this Shiny app are available 
-                      on ", a(href="https://github.com/Kylelima21/acadia_birding_festival", 
-                              "Github."),
-                      br(),br(),
+                      on ", a("Github.", href="https://github.com/Kylelima21/acadia_birding_festival", 
+                              target = "_blank"),
+                      br(),
                       
                       h4("Sources"),
-                      "Data supplied by ", a(href="https://www.ebird.org/", "eBird."),
-                      br(),br(),
+                      "Data supplied by ", a("eBird.", href = "https://www.ebird.org/", target = "_blank"),
+                      br(),
                       
                       h4("Authors"),
-                      "Kyle Lima, Schoodic Institute at Acadia National Park", br(),
-                      "Becky Marvil, Acadia Birding Festival",
-                      br(),br(),
+                      "Kyle Lima, ", a("Schoodic Institute at Acadia National Park", 
+                                       href = "https://schoodicinstitute.org/", target = "_blank"), br(),
+                      "Becky Marvil, ", a("Acadia Birding Festival",
+                                          href = "https://www.acadiabirdingfestival.com/",
+                                                 target = "_blank"), br(),
                       
                       h4("Get in touch!"),
-                      "If you have any questions about the Acadia Birding Festival, please 
-                      contact Becky Marvil: ", a(href="beckym@acadiabirdingfestival.com", 
-                                                 "beckym@acadiabirdingfestival.com"),
-                      br(),br(),
-                      "You can direct questions about this application or about Schoodic Institute
-                      to Kyle Lima: ", a(href="klima@schoodicinstitute.org", 
-                                         "klima@schoodicinstitute.org"),
-                      br(),br(),
-                      "Please checkout our websites for more information by clicking on the 
-                      logos in the bottom corners of this page."),
+                      "• If you have any questions about the Acadia Birding Festival, please 
+                      contact Becky Marvil: beckym@acadiabirdingfestival.com",
+                      br(),
+                      "• You can direct questions about this application or about Schoodic Institute
+                      to Kyle Lima: klima@schoodicinstitute.org",
+                      br(),
+                      "• Please checkout our websites for more information."),
         
         absolutePanel(id = "logo", class = "card", bottom = 25, right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(href = 'https://schoodicinstitute.org/', tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'))),
+                      tags$a(tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'), 
+                             href = 'https://schoodicinstitute.org/', target = "_blank")),
         
         absolutePanel(id = "logo", class = "card", bottom = 25, left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(href = 'https://www.acadiabirdingfestival.com/', tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto')))
+                      tags$a(tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto'),
+                             href = 'https://www.acadiabirdingfestival.com/', target = "_blank"))
       )
   )
 }
@@ -406,10 +407,12 @@ server <- function(input, output, session) {
     tpy_plot(read.csv("www/datasets/abf_clean_data.csv"))
   })
   
+  ## Number of participants/year ggplot for Trends tab
   output$partypy_plot <- renderPlot({
     partypy_plot(read.csv("www/datasets/abf_participants_trips.csv"))
   })
   
+  ## Number of trips/year ggplot for Trends tab
   output$trippy_plot <- renderPlot({
     trippy_plot(read.csv("www/datasets/abf_participants_trips.csv"))
   })

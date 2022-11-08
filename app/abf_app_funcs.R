@@ -9,7 +9,6 @@ require(fullPage)
 require(ggplot2)
 require(viridis)
 require(scales)
-require(plotly)
 
 
 ## List of functions
@@ -326,10 +325,10 @@ partypy_plot <- function(x) {
     ggplot(aes(year, participants, fill = participants, group = 1)) +
     geom_line(size = 1.5, color = "navyblue") +
     geom_point(aes(fill = participants), shape = 21, size = 3.5, color = "black") +
-    scale_y_continuous(expand = c(0,0), limits = c(0,(max(dat$participants)) + 50)) +
-    scale_x_discrete(breaks = dat$year[seq(1, length(dat$year), by = 2)]) +
+    scale_y_continuous(expand = c(0,0), limits = c(0,(max(x$participants)) + 50)) +
+    scale_x_discrete(breaks = x$year[seq(1, length(x$year), by = 2)]) +
     scale_fill_viridis(option = "rocket",
-                       values = rescale(c(0, 200, max(dat$participants))),
+                       values = rescale(c(0, 200, max(x$participants))),
                        n.breaks = 4) +
     labs(x = "Year", y = "Total participants", title = "Number of Participants Each Year") +
     theme_classic() +
@@ -365,10 +364,10 @@ trippy_plot <- function(x) {
     ggplot(aes(year, trips, fill = trips, group = 1)) +
     geom_line(size = 1.5, color = "navyblue") +
     geom_point(aes(fill = trips), shape = 21, size = 3.5, color = "black") +
-    scale_y_continuous(expand = c(0,0), limits = c(0,(max(dat$trips)) + 20)) +
-    scale_x_discrete(breaks = dat$year[seq(1, length(dat$year), by = 2)]) +
+    scale_y_continuous(expand = c(0,0), limits = c(0,(max(x$trips)) + 20)) +
+    scale_x_discrete(breaks = x$year[seq(1, length(x$year), by = 2)]) +
     scale_fill_viridis(option = "cividis",
-                       values = rescale(c(0, 40, max(dat$trips))),
+                       values = rescale(c(0, 40, max(x$trips))),
                        n.breaks = 4) +
     labs(x = "Year", y = "Total trips", title = "Number of Trips Led Each Year") +
     theme_classic() +
