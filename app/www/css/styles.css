@@ -178,7 +178,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #F7F7F7;
   border-color: black;
   padding: 10px 10px 10px 10px;
-  box-shadow: 1px 1px 1px 1px #333333;
+  box-shadow: 3px 3px 1rem rgba(0, 0, 0, 0.4);
 }
 
 #darkplots {
@@ -186,16 +186,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #trips {
-  background-color: #3E4A57;
+  background-color: rgba(25, 51, 23, 0.7);
   border-color: black;
   padding: 0 10px 10px 10px;
-  box-shadow: 1px 1px 1px 1px #333333;
+  box-shadow: 3px 3px 1rem rgba(0, 0, 0, 0.4);
 }
 
 #about {
   background-color: white;
   padding: 15px 15px 15px 15px;
   text-align: left;
-  box-shadow: 1px 1px 1px 1px #333333;
+  box-shadow: 3px 3px 1rem rgba(0, 0, 0, 0.4);
   border-color: black;
 }

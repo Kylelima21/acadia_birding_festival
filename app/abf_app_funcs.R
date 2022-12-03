@@ -131,7 +131,7 @@ leaflet_summary <- function (x) {
     addProviderTiles(providers$CartoDB.PositronOnlyLabels) %>% 
     addMarkers(formap$longitude, formap$latitude, label = formap$common.name,
                labelOptions = labelOptions(textsize = "15px"),
-               clusterOptions = markerClusterOptions(),
+               clusterOptions = markerClusterOptions(removeOutsideVisibleBounds = T),
                popup = formap$url) %>%
     fitBounds(minLong, minLat, maxLong, maxLat)
   
@@ -232,7 +232,8 @@ sp_trends <- function(x) {
 spy_plot <- function(x) {
   
   plot <- x %>% 
-    mutate(year = as.character(year)) %>%
+    mutate(year = as.character(year),
+           total = ifelse(year == "2020", total == NA_integer_, total)) %>%
     filter(year > 2009) %>% 
     ggplot(aes(year, total, fill = total, group = 1)) +
     #geom_bar(stat = "identity", color = "black") +
@@ -277,7 +278,7 @@ tpy_plot <- function(x) {
     group_by(year) %>% 
     summarise(count = sum(count), .groups = "drop") %>% 
     filter(year > 2009) %>% 
-    bind_rows(., data.frame(year = 2020, count = 0)) %>% 
+    bind_rows(., data.frame(year = 2020, count = NA_integer_)) %>%
     arrange(year) %>% 
     mutate(year = as.character(year))
   
@@ -320,7 +321,8 @@ tpy_plot <- function(x) {
 partypy_plot <- function(x) {
   
   plot <- x %>% 
-    mutate(year = as.character(year)) %>% 
+    mutate(year = as.character(year),
+           participants = ifelse(year == "2020", participants == NA_integer_, participants)) %>% 
     filter(year > 2009) %>% 
     ggplot(aes(year, participants, fill = participants, group = 1)) +
     geom_line(size = 1.5, color = "navyblue") +
@@ -359,7 +361,8 @@ partypy_plot <- function(x) {
 trippy_plot <- function(x) {
   
   plot <- x %>% 
-    mutate(year = as.character(year)) %>% 
+    mutate(year = as.character(year),
+           trips = ifelse(year == "2020", trips == NA_integer_, trips)) %>% 
     filter(year > 2009) %>% 
     ggplot(aes(year, trips, fill = trips, group = 1)) +
     geom_line(size = 1.5, color = "navyblue") +

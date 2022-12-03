@@ -245,8 +245,7 @@ ui <- function() {
                       draggable = FALSE, height = "auto",
                       
                       h4("Last updated"),
-                      "Fall 2022.",
-                      br(),
+                      textOutput("today"),
                       
                       h4("Background"),
                       "This application was built to display eBird data that the 
@@ -281,11 +280,11 @@ ui <- function() {
                       "• Please checkout our websites for more information."),
         
         absolutePanel(id = "logo", class = "card", bottom = 25, right = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(tags$img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'), 
+                      a(img(src = 'img/schoodic_stacked.jpeg', height = '100%', width = 'auto'), 
                              href = 'https://schoodicinstitute.org/', target = "_blank")),
         
         absolutePanel(id = "logo", class = "card", bottom = 25, left = 20, width = "auto", fixed = TRUE, draggable = FALSE, height = "12%",
-                      tags$a(tags$img(src = 'img/abf_logo.png', height = '100%', width = 'auto'),
+                      a(img(src = 'img/abf_logo.png', height = '100%', width = 'auto'),
                              href = 'https://www.acadiabirdingfestival.com/', target = "_blank"))
       )
   )
@@ -392,7 +391,9 @@ server <- function(input, output, session) {
         summarize(count = sum(count), .groups = "drop") %>% 
         pivot_wider(names_from = date, values_from = count) %>% 
         mutate_all(~replace(., is.na(.), 0)) %>% 
-        select(common.name, scientific.name, sort(names(.[-c(1:2)])))
+        select(common.name, scientific.name, sort(names(.[-c(1:2)]))) %>% 
+        mutate(number = 1:nrow(.)) %>% 
+        select(number, everything())
         
       write.csv(triplist, file, row.names = F)
     })
@@ -415,6 +416,12 @@ server <- function(input, output, session) {
   ## Number of trips/year ggplot for Trends tab
   output$trippy_plot <- renderPlot({
     trippy_plot(read.csv("www/datasets/abf_participants_trips.csv"))
+  })
+  
+  ## Text for today's date
+  output$today <- renderText({
+    date <- today()
+    format(date, "%B %d, %Y")
   })
   
 }
